@@ -12,6 +12,7 @@ public class menuPausa extends javax.swing.JFrame {
         initComponents();
     
         this.e = e;
+        setLocationRelativeTo(null);             
         setVisible(true);
     }
 
@@ -69,7 +70,7 @@ public class menuPausa extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BotoaoResumirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotoaoResumirActionPerformed
-        e.pausado = false; // despausa o jogo
+        e.isPausado = false; // despausa o jogo
         this.dispose();
     }//GEN-LAST:event_BotoaoResumirActionPerformed
 

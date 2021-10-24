@@ -10,12 +10,12 @@ public class espaco extends javax.swing.JFrame {
      * Creates new form espaco
      */
     public boolean isDificuldadeNormal;
-    public boolean pausado;
+    public boolean isPausado;
     
     public espaco(menuInicial mu) {
         initComponents();
         this.isDificuldadeNormal = mu.isDificuldadeNormal;
-        this.pausado = false;
+        this.isPausado = false;
 
         setLocationRelativeTo(null);
         setSize(550,550);

@@ -33,4 +33,6 @@ public class disparo extends Rectangle{
             return false;
        }       
     }
+    
+    // verifição de colisao pode ser feita na janela do jogo
 }
