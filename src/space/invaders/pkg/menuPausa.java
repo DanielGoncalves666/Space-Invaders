@@ -6,9 +6,9 @@ public class menuPausa extends javax.swing.JFrame {
      * Creates new form menuPausa
      */
     
-    espaco e;
+    janelaJogo e;
     
-    public menuPausa(espaco e) {
+    public menuPausa(janelaJogo e) {
         initComponents();
     
         this.e = e;
@@ -71,6 +71,7 @@ public class menuPausa extends javax.swing.JFrame {
 
     private void BotoaoResumirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotoaoResumirActionPerformed
         e.isPausado = false; // despausa o jogo
+        e.PausadoLabel.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_BotoaoResumirActionPerformed
 

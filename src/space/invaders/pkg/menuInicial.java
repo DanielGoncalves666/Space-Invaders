@@ -114,7 +114,7 @@ public class menuInicial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BotaoIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotaoIniciarActionPerformed
-        espaco NovoEspaco = new espaco(this);
+        janelaJogo2 NovoEspaco = new janelaJogo2(this);
     }//GEN-LAST:event_BotaoIniciarActionPerformed
 
     private void BotaoNormalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotaoNormalActionPerformed

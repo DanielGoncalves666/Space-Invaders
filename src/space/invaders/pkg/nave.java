@@ -1,38 +1,45 @@
 package space.invaders.pkg;
 
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
 
 public abstract class nave extends Rectangle{
 
-    protected static final int movimentoHorizontal = 5;
+    protected Image imagem;
     
-    public nave(int x, int y, int height, int width)
+    public nave(int x, int y, int width, int height)
     {
         super(x,y,width,height);
     }
     
-    public void moverHorizontal(KeyEvent e)
+    public void loadImagem(String caminho)
     {
-        int tecla = e.getKeyCode();
-        
-        switch(tecla)
+        ImageIcon sprite = new ImageIcon(caminho);
+        imagem = sprite.getImage();
+    }
+    
+    public Image getImagem()
+    {
+        return imagem;
+    }
+    
+    // true pra horizontal, false pra vertical
+    public void movimento(int qtd, boolean direcao)
+    {
+        if(direcao)
         {
-            case KeyEvent.VK_A:
-                if(x - movimentoHorizontal < 0)
-                    throw new IndexOutOfBoundsException();
-                else
-                    this.setLocation(x - movimentoHorizontal, y);
-                break;
-            case KeyEvent.VK_D:
-                if(x + movimentoHorizontal > 500) // precisamos adicionar uma verificação, ja q o ponto indica a esquerda superior
-                    throw new IndexOutOfBoundsException();
-                else
-                    this.setLocation(x + movimentoHorizontal, y);
-                
-                break;
-            default:
-                throw new RuntimeException("Comando inválido.");
+            if(0 <= x + qtd && x + qtd < 480)
+                this.setLocation(x + qtd, y);
+        }
+        else
+        {
+            if(y - qtd + 20 >= 120)
+                this.setLocation(x, y + qtd);
         }
     }
+    
+    
+    public abstract disparo criarDisparo();
 }

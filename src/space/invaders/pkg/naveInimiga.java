@@ -1,38 +1,25 @@
 package space.invaders.pkg;
 
-import java.awt.event.KeyEvent;
+import static java.lang.Math.ceil;
 
 public class naveInimiga extends nave{
 
-    protected static final int movimentoVertical = 10;
+    private int valorScore;
+    //30 de comprimeto, 20 de altura
+    public naveInimiga(int x, int y, int width, int height, int valorScore, String caminho) {
+        super(x, y, width, height);
+        loadImagem(caminho);
+        this.valorScore = valorScore;
+    
+    }
 
-    public naveInimiga(int x, int y, int height, int width) {
-        super(x, y, height, width);
+    @Override
+    public disparo criarDisparo() {
+        return new disparo(x + (int) ceil( width / 2) , y + height,-1);
     }
     
-    // talvez seja uma boa unir esse metodo com o de movimento horizontal e o de tiro. Ter o tratamento de entrada em um lugar só.
-    public void movimentaVertical(KeyEvent e)
+    public int getScore()
     {
-        int tecla = e.getKeyCode();
-    
-        switch(tecla)
-        {
-            case KeyEvent.VK_S://pra baixo     
-                if(y - movimentoVertical < 0)  // precisamos adicionar uma verificação, ja q o ponto indica a esquerda superior
-                    throw new IndexOutOfBoundsException();
-                else
-                    this.setLocation(x, y - movimentoVertical);
-                break;
-            case KeyEvent.VK_W:// pra cima
-                if(y + movimentoVertical > 500)
-                    throw new IndexOutOfBoundsException();
-                else
-                    this.setLocation(x, y + movimentoVertical);
-                break; 
-            default:
-                throw new RuntimeException("Comando inválido.");
-        }
-    
-    
+        return valorScore;
     }
 }

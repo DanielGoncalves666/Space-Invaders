@@ -1,9 +1,17 @@
 package space.invaders.pkg;
 
+import static java.lang.Math.ceil;
+
 public class naveJogador extends nave{
-    
-    public naveJogador(int x, int y, int height, int width) {
-        super(x, y, height, width);
+    // 40 de comprimento, 30 de altura
+    public naveJogador(int x, int y, int width, int height) {
+        super(x, y, width, height);
+        loadImagem("imagens//Jogador.png");
+    }
+
+    @Override
+    public disparo criarDisparo() {
+        return new disparo(x + (int) ceil( width / 2) , y ,1);
     }
     
     
