@@ -6,23 +6,23 @@ import javax.swing.ImageIcon;
 
 public class disparo extends Rectangle{
     private Image imagem;
-    private int modificadorDeDirecao; // -1 para baixo, +1 para cima
-    protected static final int movimentoVertical = 10;    
+    private int modificadorDeDirecao; // +1 para baixo, -1 para cima
+    protected static final int movimentoVertical = 2;    
     private static final int altura = 20;
     private static final int largura = 3;
     
     public disparo(int x, int y, int direcao)
     {
         super(x,y,largura,altura);
-        if(direcao >= 0)
+        if(direcao < 0)
         {
-            modificadorDeDirecao = 1;
-            loadImagem(1);
+            modificadorDeDirecao = -1;
+            loadImagem(-1);
         }
         else
         {
-            loadImagem(-1);
-            modificadorDeDirecao = -1;
+            loadImagem(1);
+            modificadorDeDirecao = 1;
         }
     }
     
@@ -30,13 +30,13 @@ public class disparo extends Rectangle{
     {
         ImageIcon sprite;
         
-        if(dir == 1)
+        if(dir == -1)
         {
-            sprite = new ImageIcon("imagens\\disparoCima.png");
+            sprite = new ImageIcon("imagens//disparoCima.png");
         }
         else
         {
-            sprite = new ImageIcon("imagens\\disparoBaixo.png");
+            sprite = new ImageIcon("imagens//disparoBaixo.png");
         } 
         imagem = sprite.getImage();
     }
@@ -51,13 +51,13 @@ public class disparo extends Rectangle{
      */
     public boolean movimentarVertical()
     {
-       int novoX = x + movimentoVertical * modificadorDeDirecao;
+       int novoY = y + movimentoVertical * modificadorDeDirecao;
        
-       if(novoX <= 0 || novoX >= 499)
+       if(novoY <= 0 || novoY >= 499)
            return true;
        else
        {
-            x = novoX;
+            y = novoY;
             return false;
        }       
     }

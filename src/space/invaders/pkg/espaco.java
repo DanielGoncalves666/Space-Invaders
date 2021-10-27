@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -35,22 +34,22 @@ public class espaco extends JPanel implements ActionListener{
         
         addKeyListener(new Teclou());
         
-        timer = new Timer(10, this);
-        timer.start();
+       timer = new Timer(5, this);
+       timer.start();
     }
 
     @Override
     public void paint(Graphics g){
-        g.setColor(Color.YELLOW);
+        g.setColor(Color.blue);
         Graphics2D imagens = (Graphics2D) g;
-        imagens.fillRect(50, 50, 500, 500);
+        imagens.fillRect(0, 0, 520, 500);
         imagens.drawImage(jogador.getImagem(), jogador.x, jogador.y, this);
         g.dispose();
     }
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+
         jogador.movimento(movimento,true);
         repaint();
     }
@@ -65,10 +64,10 @@ public class espaco extends JPanel implements ActionListener{
 
             switch (tecla) {
                 case KeyEvent.VK_A:
-                    movimento = -3;
+                    movimento = -1;
                     break;
                 case KeyEvent.VK_D:
-                    movimento = 3;
+                    movimento = 1;
                     break;
                 case KeyEvent.VK_SPACE:
 

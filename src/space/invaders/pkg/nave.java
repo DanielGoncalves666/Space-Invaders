@@ -2,7 +2,6 @@ package space.invaders.pkg;
 
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 
 public abstract class nave extends Rectangle{
@@ -30,12 +29,12 @@ public abstract class nave extends Rectangle{
     {
         if(direcao)
         {
-            if(0 <= x + qtd && x + qtd < 480)
+            if(0 <= x + qtd && x + qtd < 510)// -40 para que não saia da tela
                 this.setLocation(x + qtd, y);
         }
         else
         {
-            if(y - qtd + 20 >= 120)
+            if(y - qtd + 20 >= 120) // o valor da direita é o limite mínimo para as naves inimigas
                 this.setLocation(x, y + qtd);
         }
     }

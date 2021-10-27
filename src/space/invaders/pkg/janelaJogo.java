@@ -38,12 +38,20 @@ public class janelaJogo extends javax.swing.JFrame {
     private void initComponents() {
 
         PausadoLabel = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Space Invaders");
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         PausadoLabel.setFont(new java.awt.Font("Noto Sans", 0, 24)); // NOI18N
         PausadoLabel.setText("Pausado");
+
+        jButton1.setText("jButton1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -53,17 +61,27 @@ public class janelaJogo extends javax.swing.JFrame {
                 .addGap(124, 124, 124)
                 .addComponent(PausadoLabel)
                 .addContainerGap(172, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(71, 71, 71))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(42, 42, 42)
                 .addComponent(PausadoLabel)
-                .addContainerGap(225, Short.MAX_VALUE))
+                .addGap(61, 61, 61)
+                .addComponent(jButton1)
+                .addContainerGap(133, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formKeyPressed
 
     
     /**
@@ -104,6 +122,7 @@ public class janelaJogo extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JLabel PausadoLabel;
+    private javax.swing.JButton jButton1;
     // End of variables declaration//GEN-END:variables
     
 }
