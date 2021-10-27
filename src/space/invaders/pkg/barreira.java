@@ -1,11 +1,12 @@
 package space.invaders.pkg;
 
+import java.awt.Image;
 import java.awt.Rectangle;
-
-// esse jeito aqui n vai funcionar
+import javax.swing.ImageIcon;
 
 
 public class barreira extends Rectangle{
+    private Image imagem;
     private static final int altura = 50;
     private static final int largura = 50;
     private int intactos;
@@ -20,21 +21,32 @@ public class barreira extends Rectangle{
     {
         super(x,y,largura,altura);
         construirBarreira(x,y);
+        loadImagem();
         intactos = 25;
+    }
+    
+    private void loadImagem()
+    {
+        ImageIcon sprite = new ImageIcon("imagens//Nuvem.png"); 
+        imagem = sprite.getImage();
+    }
+
+    public Image getImagem() {
+        return imagem;
     }
     
     public void construirBarreira(int x0, int y0)
     {
-        int x;
-        int y;
+        int xf;
+        int yf;
         
         for(int i = 0; i < 5; i++)
         {
-            x = x0 + i * 10; 
+            xf = x0 + i * 10; 
             for(int j = 0; j < 5; j ++)
             {
-                y = y0 + i * 10;
-                mat[i][j] = new Rectangle(x,y,10,10);
+                yf = y0 + j * 10;
+                mat[i][j] = new Rectangle(xf,yf,10,10);
             }
         }
     }
@@ -72,5 +84,18 @@ public class barreira extends Rectangle{
     public boolean barreiraTotalmenteDestruida()
     {
         return intactos == 0;
+    }
+    
+    public Rectangle[][] getMatriz()
+    {
+        return mat;
+    }
+
+    public int getQtdBlocosAltura() {
+        return altura / 10;
+    }
+
+    public int getQtdBlocosLargura() {
+        return largura / 10;
     }
 }

@@ -3,6 +3,7 @@ package space.invaders.pkg;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+// a tela possui 550 de largura por 500 de altura
 public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
 
     private final int miliseconds = 4;
@@ -25,6 +27,7 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
 
     private naveJogador jogador;
     private ArrayList<disparo> vetorDisparos = new ArrayList<>();
+    private ArrayList<barreira> linhaDeDefesa = new ArrayList<>();
     
     public janelaJogo5(menuInicial mu) {
         initComponents();
@@ -36,12 +39,9 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
         this.PausadoLabel.setVisible(false);
         this.isDificuldadeNormal = mu.isDificuldadeNormal;
         this.isPausado = false;
-        this.atirar = false;
-        this.movimento = 0;
-        this.tempoEntreDisparosJogador = 0;
-        this.atirar = false;
-        jogador = new naveJogador(500 / 2, 500 - 40, 40,30);
-
+        
+        criaJogador();
+        criaBarreiras();
         
         PainelJogo.setVisible(true);
         
@@ -156,8 +156,8 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
                 break;
             case KeyEvent.VK_P:
                 
-                // temos que ter uma meneira de parar o jogo
                 PausadoLabel.setVisible(true);
+                this.isPausado = true;
                 menuPausa mp = new menuPausa(this);
                 break;
             default:
@@ -182,33 +182,39 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
     } 
 
     public void actionPerformed(ActionEvent e) {
-        jogador.movimento(movimento,true); // movimentação do jogador. Ocorre de acordo com o valor determinado em "movimento".
-        if(this.atirar)// o jogador dispara se essa flag for verdadeira
-        {                                             // assim o disparo sai do meio da bave
-            vetorDisparos.add(new disparo(jogador.x + 20, jogador.y, -1));
-            this.atirar = false;
-            System.out.println("disparo");
-            // 1 pois o disparo irá pra cima
-        }
-        else
+        // as operações de movimentação e tiro só são realizadas quando o jogo não está pausado
+        if(!isPausado)
         {
-            this.tempoEntreDisparosJogador--;
+            jogador.movimento(movimento,true); // movimentação do jogador. Ocorre de acordo com o valor determinado em "movimento".
+            if(this.atirar)// o jogador dispara se essa flag for verdadeira
+            {                                             // assim o disparo sai do meio da bave
+                vetorDisparos.add(new disparo(jogador.x + 20, jogador.y, -1));
+                this.atirar = false;
+                // 1 pois o disparo irá pra cima
+            }
+            else
+            {
+                this.tempoEntreDisparosJogador--;
+            }
+
+
+            // movimentar inimigos
+
+            movimentarDisparos();
+            colisaoBarreiras();
+            // verificar colisao com os outros objetos
+
+
+
+
+
+
+            // a repintura do painel precisa ser a última operação a ser feita
+            PainelJogo.repaint();
         }
         
         
-        // movimentar inimigos
         
-        movimentarDisparos();
-        
-        // verificar colisao com os outros objetos
-        
-        
-        
-        
-        
-        
-        // a repintura do painel precisa ser a última operação a ser feita
-        PainelJogo.repaint();
     }
     
     /**
@@ -269,10 +275,24 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
                 for(disparo d : vetorDisparos)// desenha os disparos (jogador e inimigos)
                 {
                     imagens.drawImage(d.getImagem(), d.x, d.y, this);
-                    System.out.println(d.y);
                 }
                 
-                // desenhar barreiras
+                for(barreira b: linhaDeDefesa)
+                {
+                    Rectangle[][] mat = b.getMatriz();
+                    
+                    for(int i = 0; i < b.getQtdBlocosAltura(); i++)
+                    {
+                        for(int j = 0; j < b.getQtdBlocosLargura(); j++)
+                        {
+                            if(mat[i][j] == null)// o null indica que aquela posição não existe mais, logo não é desenhada
+                                continue;
+                                
+                            imagens.drawImage(b.getImagem(), mat[i][j].x,mat[i][j].y, this);    
+                        }
+                    }
+                }
+
                 // desenhar naves inimigas
                 // desenhar nave especial
                 
@@ -285,7 +305,7 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
     }
     
     public void movimentarDisparos()
-    {
+    {       
         boolean r;
         
         for (Iterator iterador = vetorDisparos.iterator(); iterador.hasNext();) 
@@ -300,4 +320,83 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
             
         }
     }
+    
+    public void colisaoBarreiras()
+    {
+        //primeiramente é verificado, para cada disparo, se ocorre uma colisão com a barreira em um todo
+        
+        for(Iterator iterador = vetorDisparos.iterator(); iterador.hasNext();)
+        {
+            disparo d = (disparo) iterador.next();
+            for(Iterator iter = linhaDeDefesa.iterator(); iter.hasNext();)
+            {
+                barreira b = (barreira) iter.next();
+                if(d.intersects(b))
+                {
+                    // sabendo que realmente ocorre uma colisão, chamamos a função que realiza a colisão interna (se ocorrer)
+                    if(b.colisao(d))
+                    {
+                        // ocorreu uma colisao, entao eliminamos o disparo
+                        iterador.remove(); // remove o disparo
+                        
+                        if(b.barreiraTotalmenteDestruida())
+                        {
+                            //caso a barreira esteja totalmente destruída, eliminamos ela da lista de barreiras
+                            iter.remove();
+                        }
+                        
+                        break;// como o disparo que estava sendo verificado já colidiu,não precisamos verificar o resto das barreiras
+                    }
+                }
+            }
+        }
+    }
+    
+    public void criaJogador()
+    {
+        // sao 550 de largura, o meio entao seria em 275. Porém o jogador tem 40 pixels de largura, logo pra ser no meio precisamos diminuir 20.
+        // sao 500 de altura. A linha mais embaixo é a 499. Tiramos 40 pois sao 30 da altura do jogador e 10 de espaço no fundo.
+        jogador = new naveJogador(255, 459, 40, 30);
+        this.atirar = false;
+        this.movimento = 0;
+        this.tempoEntreDisparosJogador = 0;
+        this.atirar = false;
+
+    }
+    
+    
+    public void criaBarreiras()
+    {
+        barreira nova;
+        int coordenadaX = 70; // começa em 70
+        int coordenadaY = 380; // 500 - 10 - 30 - 30 - 50
+        
+        for(int i = 0; i < 5; i++)
+        {
+            // 90px separam a ponta esquerda superior de duas barreiras.
+            nova = new barreira(coordenadaX + 90 * i,coordenadaY);
+            
+            linhaDeDefesa.add(nova);
+            
+        }
+    }
 }
+
+// --- Horizontal / Barreiras ---//
+// Sao 550 pixels
+// 70px 50px 40px 50px 40px 50px 40px 50px 40px 50px 70px
+//  E    B    E    B    E    B    E    B    E    B    E
+
+// --- Vertical --- //
+    // zona de controle do inimigo --> 350 pixels
+// 10 pixels de espaço
+// 20 pixels da nave de evento especial
+// 50 pixels de espaço
+// 270 pixels para as fileiras inimigas se movimentarem
+
+    // zona de controle do jogador --> 150 pixels
+// 30 pixels de espaço
+// 50 pixels de barreira.
+// 30 pixels de espaço.
+// 30 pixels do jogador.
+// 10 pixels de espaço.

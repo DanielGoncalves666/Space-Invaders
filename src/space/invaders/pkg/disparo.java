@@ -53,7 +53,7 @@ public class disparo extends Rectangle{
     {
        int novoY = y + movimentoVertical * modificadorDeDirecao;
        
-       if(novoY <= 0 || novoY >= 499)
+       if(novoY <= -20 || novoY >= 499)
            return true;
        else
        {

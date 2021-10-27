@@ -5,12 +5,16 @@ import static java.lang.Math.ceil;
 public class naveInimiga extends nave{
 
     private int valorScore;
+    private int linhaInimiga; // armazena qual linha a nave faz parte
+    private int colunaInimiga; // armazena qual coluna a nave faz parte
+    
     //30 de comprimeto, 20 de altura
-    public naveInimiga(int x, int y, int width, int height, int valorScore, String caminho) {
+    public naveInimiga(int x, int y, int width, int height, int valorScore, int linhaInimiga, int colunaInimiga, String caminho) {
         super(x, y, width, height);
         loadImagem(caminho);
         this.valorScore = valorScore;
-    
+        this.linhaInimiga = linhaInimiga;
+        this.colunaInimiga = colunaInimiga;
     }
 
     @Override
