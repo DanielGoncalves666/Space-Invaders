@@ -14,5 +14,10 @@ public class naveJogador extends nave{
         return new disparo(x + (int) ceil( width / 2) , y ,1);
     }
     
+    public void setImagem(String caminho)
+    {
+        loadImagem(caminho);
+    }
+    
     
 }

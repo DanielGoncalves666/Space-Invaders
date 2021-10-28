@@ -1,186 +1,285 @@
 package space.invaders.pkg;
 
+import java.awt.Rectangle;
 import java.util.HashMap;
 
 /**
  * Classe que realiza o controle sobre todas as naves inimigas (exceto a nave de evento especial)
  */
-public class frotaInimiga {
+public class frotaInimiga extends Rectangle{
     // cada nave inimiga possui dimensões: 30px de largura e 20px de altura
-    // 5 fileiras, 10 naves
+    // 5 fileiras, 9 naves
     
     private HashMap<Integer,naveInimiga> fleet;
     private final int qtdFilas = 5;
-    private final int qtdPorFila = 10;
-    private int navesVivas[];       // qtd de naves vivas por linhas
-    
-    private int coordenadaXFila[]; //coordenada de cada fila (linha, sendo a primeira linha que compõe a fila) 
-    private int colunaNaveAEsquerda; // armazena a coluna da nave mais a esquerda
-    private int colunaNaveADireita; // armazena a coluna da nave mais a direita
-    
-    // esses valores precisam ser definidos corretamente
-    private final int esquerdaMaximo = 10;
-    private final int direitaMaximo = 1000;
-    private final int baixoMinimo = 100;
-    
-    /* cada nave inimiga terá um código de 3 dígitos
-       xyz
-           x --> indica a fileira que a nave inimiga pertence. Essa fileiras são numeradas de baixo pra cima
-           y e z --> indicam a numeração própria da nave
-
-        Esse tipo de marcação talvez coloque peso na verificação de impacto dos disparos, mas a alternativa de indicar
-        as coordenadas como chave coloca peso na movimentação das naves.
-    
-        Estamos assumindo que as filas nao tem mais que 100 naves cada.
-    */
+    private final int qtdPorFila = 9;
+    private int sentido;// 1 para direita, -1 para esquerda        
     
     // 5 fileiras, 9 naves
-    public frotaInimiga(int filas, int qtdPorFila)
+    public frotaInimiga()
     {
-        this.qtdFilas = filas;
-        this.qtdPorFila = qtdPorFila;
-        navesVivas = new int[filas];
+        // cada nave tem 20 de altura, 5 * 20 = 100 e 4 * 15 = 60. Total de 160 px
+        super(80,60,390,160);
+        this.sentido = 1;
+        fleet = new HashMap<>();
         construirFrota();
-        
     }
     
+    /*
+        550 pixels de largura
+    9 naves, cada uma com 30 pixels de largura = 270 px em naves
+    15 pixels entre cada nave = 15 * 8 = 120 pixels
+        Total = 390 pixels
+    Sobra 160 pixels para movimentar no principio
+    
+    Desse modo, a nave mais à direita começa na coluna 80
+    
+    */
     private void construirFrota()
     {
         int entreNaves = 15; //define a quantidade de colunas que separam duas naves
-        int entreLinhas = 15; // define a quantidade de linhas que separam duas filas
-        int linhaInicial = 70; // linha da primeira fila
-        int colunaInicial = 50; // coluna da primeira nave
-        int codigo;//codigo da nave
+        int entreLinhas = 20; // define a quantidade de linhas que separam duas filas
+        int linhaInicial = 60; // linha da fila superior de naves
+        int colunaInicial = 80; // coluna das naves mais à direita
         
-        for(int i = 0; i < filas; i++)
+        for(int i = 0; i < qtdFilas; i++)
         {
-            int linha = linhaInicial + entreLinhas * i;
-            coordenadaXFila[i] = linha;
+            // 20 da altura da nave
+            int linhaNave = linhaInicial + entreLinhas * i + 20 * i;
             for(int h = 0; h < qtdPorFila; h++)
             {
-                int coluna = colunaInicial + entreNaves * h;
-                codigo = 100 * i + h;
-                adicionarNave(codigo,linha,coluna);
+                // 30 da largura da nave
+                int colunaNave = colunaInicial + entreNaves * h + 30 * h;
+                           
+                adicionarNave(i, h, colunaNave, linhaNave);
             }
         }
     }
     
-    private void alterarCoordenadaXFila(int qtd)
-    {
-        for(int i = 0; i < getQtdFilas(); i++)
-        {
-            coordenadaXFila[i] = coordenadaXFila[i] + qtd;
-        }
-    }
-    
-    public void adicionarNave(int codigo, int x, int y)
-    {
-        naveInimiga n = new naveInimiga(x,y);
+    public void adicionarNave(int linha, int coluna, int x, int y)
+    {                        
+        int score;
+        String caminho;
         
-        fleet.put(codigo, n);
+        switch(linha)
+        {
+            case 0:
+                score = 30;
+                caminho = "imagens//Inimigo_30.gif";
+                break;
+            case 1:
+                score = 20;
+                caminho = "imagens//Inimigo_20.gif";
+                break;                
+            case 2:
+                score = 20;
+                caminho = "imagens//Inimigo_20.gif";
+                break;                
+            case 3:
+                score = 10;
+                caminho = "imagens//Inimigo_10.gif";
+                break;
+            case 4:
+                score = 10;
+                caminho = "imagens//Inimigo_10.gif";
+                break;
+            default:
+                score = 0;
+                caminho = "imagens//Inimigo_10.gif";
+        }
+        
+        naveInimiga n = new naveInimiga(x,y,score,linha,coluna,caminho);
+        
+        int key = linha* 10 + coluna;
+        fleet.put(key, n);
         // no caso de uma nave com mesmo codigo, essa nave é sobreescrita.
     }
     
-    public void removerNave(int codigo)
+    public int ColunaNaveAEsquerda()
     {
-        if(fleet.containsKey(codigo))
+        for(int h = 0; h < qtdPorFila; h++)
         {
-            fleet.remove(codigo);
-        }
-        else
-            throw new RuntimeException("Nave inexistente.");
+            for(int i = 0; i < qtdFilas; i++)
+            {
+                int key = i * 10 + h;
+                if(fleet.containsKey(key))
+                {
+                    return fleet.get(key).x;
+                    // é retornada a coluna da nave mais à esquerda
+                }
+            }
+        }    
+        return -1;// nesse caso já não existe nave inimiga viva
     }
     
-    public void recalcularVivas()
+    public int ColunaNaveADireita()
     {
-        Object keyset[] = fleet.keySet().toArray();
-        
-        for(int i = 0; i < getQtdFilas(); i++)
+        for(int h = qtdPorFila - 1; h >= 0; h--)        
         {
-            navesVivas[i] = 0;
-        }
+            for(int i = 0; i < qtdFilas; i++)
+            {
+                int key = i * 10 + h;
+                if(fleet.containsKey(key))
+                {
+                    return fleet.get(key).x;
+                    // é retornada a coluna da nave mais à direita (sem considerar o tamanho dela)
+                }
+            }
+        }    
         
-        for(Object x : keyset)
-        {
-            int indice = (int)x / 100;
-            navesVivas[indice]++;
-        }
+        return -1;// nesse caso já não existe nave inimiga viva
     }
     
-    // esse método pode ser simplificado
-    public void moverFrota(char c)
+    public int LinhaNaveMaisBaixa()
     {
-        switch(c)
+        for(int i = qtdFilas - 1; i >= 0; i--)
         {
-            case 'e':
-                if(esquerdaMaximo == colunaNaveAEsquerda)
-                    throw new RuntimeException("Limite da zona de movimentação (esquerda) alcançado.");
-                else
+            for(int h = 0; h < qtdPorFila; h++)
+            {
+                int key = i * 10 + h;
+                if(fleet.containsKey(key))
                 {
-                    Object keyset[] = fleet.keySet().toArray();
-                    
-                    for(Object x : keyset)
-                    {
-                        naveInimiga n = fleet.get((Integer)x);
-                        n.moverHorizontal(c);
-                        fleet.replace((Integer)x, n);
-                    }
+                    return fleet.get(key).y;
+                    // é retornada a linha da nave mais embaixo (sem considerar o tamanho dela)
                 }
-            break;
-            case 'd':
-                if(direitaMaximo == colunaNaveADireita)
-                    throw new RuntimeException("Limite da zona de movimentação (direita) alcançado.");
-                else
-                {
-                    Object keyset[] = fleet.keySet().toArray();
-                    
-                    for(Object x : keyset)
-                    {
-                        naveInimiga n = fleet.get((Integer)x);
-                        n.moverHorizontal(c);
-                        fleet.replace((Integer)x, n);
-                    }
-                }
-            break;
-            case 'b':
-                if(baixoMinimo == coordenadaXFila[getQtdFilas() - 1])
-                    throw new RuntimeException("Limite da zona de movimentação (baixa) alcançado.");
-                else
-                {
-                    int linhasAPular = 5; // quantidade de linhas q as filas descem
-                    
-                    Object keyset[] = fleet.keySet().toArray();
-                    
-                    for(Object x : keyset)
-                    {
-                        naveInimiga n = fleet.get((Integer)x);
-                        n.moverVertical(c, linhasAPular);
-                        fleet.replace((Integer)x, n);
-                    }
-                    
-                    alterarCoordenadaXFila(linhasAPular);
-                }
-            break;
-            default:
+            }
         }
+        
+        return -1; // nesse caso já não existe nave inimiga viva
     }
+    
+    
+    public void moverFrota(int movimentoHorizontal, int movimentoVertical)
+    {
+        movimentoVertical = Math.abs(movimentoVertical);
+        movimentoHorizontal = Math.abs(movimentoHorizontal);
+        
+        if(sentido == 1)            // direita
+        {
+            if(ColunaNaveADireita() + 30 + movimentoHorizontal * sentido >= 540)
+            {
+                sentido = -1;
+                //muda o sentido de movimentação
+                
+                //as naves descem um pouco
+                Object keyset[] = fleet.keySet().toArray();
+                for(Object obj : keyset)
+                {
+                    naveInimiga n = fleet.get((Integer) obj);
+                    n.movimento(movimentoVertical, false);
+                    fleet.replace((Integer)obj, n);
+                }
+                
+                this.y += movimentoVertical;// movimenta o rectangle que engloba todos os inimigos
+            }
+            else
+            {
+                //movimenta à direita
+                Object keyset[] = fleet.keySet().toArray();
+                    
+                for(Object obj : keyset)
+                {
+                    naveInimiga n = fleet.get((Integer) obj);
+                    n.movimento(movimentoHorizontal, true);
+                    fleet.replace((Integer)obj, n);
+                }
+                
+                this.x += movimentoHorizontal;// movimenta o rectangle que engloba todos os inimigos
+            }
+        }
+        else if(sentido == -1)      // esquerda
+        {
+            if(ColunaNaveAEsquerda() + movimentoHorizontal * sentido <= 0)
+            {
+                sentido = 1;
+                // muda o sentido de movimentação
+                
+                //as naves descem um pouco
+                Object keyset[] = fleet.keySet().toArray();
+                    
+                for(Object obj : keyset)
+                {
+                    naveInimiga n = fleet.get((Integer) obj);
+                    n.movimento( movimentoVertical, false);
+                    fleet.replace((Integer)obj, n);
+                }
 
-    public int getQtdFilas() {
-        return qtdFilas;
+                this.y += movimentoVertical;// movimenta o rectangle que engloba todos os inimigos
+            }
+            else
+            {
+                //movimenta à esquerda
+                Object keyset[] = fleet.keySet().toArray();
+                    
+                for(Object obj : keyset)
+                {
+                    naveInimiga n = fleet.get((Integer) obj);
+                    n.movimento( -movimentoHorizontal, true);
+                    fleet.replace((Integer)obj, n);
+                }
+                
+                this.x -= movimentoHorizontal;// movimenta o rectangle que engloba todos os inimigos
+            }
+        }
     }
+    
+    
+    // na classe de jogo verifica se o disparo colide.
+    // se colidir, chama esse método para verificar se ocorre realmente uma colisão
+    // se sim, elimina a nave que foi atingida
+        // e retorna 0, se nada tiver sido atingido, ou o score da nave destruida
+    public int colisao(disparo d)
+    {
+        Object[] vet = fleet.keySet().toArray();
+        int score = 0;
+        
+        for(Object key : vet)
+        {
+            naveInimiga ni = fleet.get(key);
+            
+            if(d.intersects(ni))
+            {
+                score = ni.getScore();
+                ni = fleet.remove( (Integer) key);
+                
+                return score;
+            }
+        }
+        
+        return 0;
+    }
+    
+    public disparo disparar(naveJogador nj)
+    {
+        int colunaEsquerdaDoJogador = nj.x;
+        int colunaDireitaDoJogador = nj.x + 40;
+        
+        for(int i = qtdFilas - 1; i >= 0; i--)
+        {
+            for(int h = 0; h < qtdPorFila; h++)
+            {
+                int key = i * 10 + h;
+                if(fleet.containsKey(key))
+                {
+                    naveInimiga ni = fleet.get(key);
+
+                    if(colunaEsquerdaDoJogador - 15 <= ni.x && ni.x  + 30 <= colunaDireitaDoJogador + 15)
+                    
+                        return ni.criarDisparo();
+                }
+            }
+        }
+        
+        return null;// é pq todas as naves foram destruídas
+    }
+    
     
     public int getTotalVivas()
     {
-        int soma = 0;
-        for(int i = 0; i < getQtdFilas(); i++)
-        {
-            soma += navesVivas[i];
-        }
-        
-        return soma;
+        return fleet.size();
     }
 
-    public int[] getCoordenadaXFila() {
-        return coordenadaXFila;
+    public HashMap<Integer, naveInimiga> getFleet() {
+        return fleet;
     }
 }

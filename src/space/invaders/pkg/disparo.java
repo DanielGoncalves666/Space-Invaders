@@ -7,7 +7,6 @@ import javax.swing.ImageIcon;
 public class disparo extends Rectangle{
     private Image imagem;
     private int modificadorDeDirecao; // +1 para baixo, -1 para cima
-    protected static final int movimentoVertical = 2;    
     private static final int altura = 20;
     private static final int largura = 3;
     
@@ -49,9 +48,9 @@ public class disparo extends Rectangle{
      * Retorna true se o disparo deve ser destruido por ter atingido o fim do tabuleiro.
      * @return 
      */
-    public boolean movimentarVertical()
+    public boolean movimentarVertical(int qtd)
     {
-       int novoY = y + movimentoVertical * modificadorDeDirecao;
+       int novoY = y + qtd * modificadorDeDirecao;
        
        if(novoY <= -20 || novoY >= 499)
            return true;
@@ -61,6 +60,8 @@ public class disparo extends Rectangle{
             return false;
        }       
     }
-    
-    // verifição de colisao pode ser feita na janela do jogo
+
+    public int getModificadorDeDirecao() {
+        return modificadorDeDirecao;
+    }
 }

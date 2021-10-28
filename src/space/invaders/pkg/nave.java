@@ -27,14 +27,15 @@ public abstract class nave extends Rectangle{
     // true pra horizontal, false pra vertical
     public void movimento(int qtd, boolean direcao)
     {
+        // qtd negativo vai pra esquerda, qtd positivo pra direita
         if(direcao)
         {
-            if(0 <= x + qtd && x + qtd < 510)// -40 para que não saia da tela
+            if(0 <= x + qtd && x + qtd < 510)// 550 - 40 para que não saia da tela
                 this.setLocation(x + qtd, y);
         }
         else
         {
-            if(y - qtd + 20 >= 120) // o valor da direita é o limite mínimo para as naves inimigas
+            if(y + qtd <= 480) // o valor da direita é o limite mínimo para as naves inimigas
                 this.setLocation(x, y + qtd);
         }
     }

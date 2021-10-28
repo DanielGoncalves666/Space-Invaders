@@ -9,8 +9,8 @@ public class naveInimiga extends nave{
     private int colunaInimiga; // armazena qual coluna a nave faz parte
     
     //30 de comprimeto, 20 de altura
-    public naveInimiga(int x, int y, int width, int height, int valorScore, int linhaInimiga, int colunaInimiga, String caminho) {
-        super(x, y, width, height);
+    public naveInimiga(int x, int y, int valorScore, int linhaInimiga, int colunaInimiga, String caminho) {
+        super(x, y, 30, 20);
         loadImagem(caminho);
         this.valorScore = valorScore;
         this.linhaInimiga = linhaInimiga;
@@ -19,7 +19,7 @@ public class naveInimiga extends nave{
 
     @Override
     public disparo criarDisparo() {
-        return new disparo(x + (int) ceil( width / 2) , y + height,-1);
+        return new disparo(x + (int) ceil( width / 2) , y + height,1);
     }
     
     public int getScore()
