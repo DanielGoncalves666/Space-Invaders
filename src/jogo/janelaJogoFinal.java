@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 // a tela possui 550 de largura por 500 de altura
-public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
+public class janelaJogoFinal extends javax.swing.JFrame implements ActionListener{
 
     private final int miliseconds = 4;// padrao é 4
     private final int IntervaloEntreDisparosInimigos = 1000 / miliseconds;   
@@ -37,6 +37,7 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
     private int qtdVidas;
     private int Score;
     private int contagemEventoEspecial;
+    private int velMovHorizontalInimigo;
 
     private naveJogador jogador;
     private ArrayList<disparo> vetorDisparos = new ArrayList<>();
@@ -44,10 +45,10 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
     private frotaInimiga Frota;
     private naveInimigaEspecial especial;
     
-    public janelaJogo5(menuInicial mu) {
+    public janelaJogoFinal(menuInicial mu) {
         initComponents();
-        this.setVisible(true);
         this.setLocationRelativeTo(null);
+        this.setVisible(true);
         this.setResizable(false);
         this.setFocusable(true);
         this.setTitle("Space Invaders");
@@ -60,7 +61,14 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
         criarInimigos();
 
         if(isDificuldadeNormal) // barreiras apenas na dificuldade normal
+        {
             criaBarreiras();
+            this.velMovHorizontalInimigo = 2;
+        }
+        else
+        {
+            this.velMovHorizontalInimigo = 4;
+        }
 
         
         PainelJogo.setVisible(true);
@@ -155,15 +163,14 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) 
     {
-        System.out.println("Teclou" + evt.getKeyChar());
         int tecla = evt.getKeyCode();
         this.recomecar = true;
         
         switch (tecla) {
-            case KeyEvent.VK_A:
+            case KeyEvent.VK_LEFT:
                 movimento = -1;
                 break;
-            case KeyEvent.VK_D:
+            case KeyEvent.VK_RIGHT:
                 movimento = 1;
                 break;
             case KeyEvent.VK_SPACE:
@@ -186,10 +193,10 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
 
         switch (tecla) 
         {
-            case KeyEvent.VK_A:
+            case KeyEvent.VK_LEFT:
                 movimento = 0;
                 break;
-            case KeyEvent.VK_D:
+            case KeyEvent.VK_RIGHT:
                 movimento = 0;
                 break;
             default:
@@ -232,7 +239,7 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
             // movimentação do inimigo
             if(IntervaloMovimentoInimigo == 0)
             {
-                Frota.moverFrota(2, 5);
+                Frota.moverFrota(this.velMovHorizontalInimigo, 5);
                 IntervaloMovimentoInimigo = IntervaloMovimento;
             }
             else
@@ -335,20 +342,21 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(janelaJogo5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(janelaJogoFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(janelaJogo5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(janelaJogoFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(janelaJogo5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(janelaJogoFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(janelaJogo5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(janelaJogoFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new janelaJogo5(null).setVisible(true);
+                new janelaJogoFinal(null).setVisible(true);
             }
         });
     }

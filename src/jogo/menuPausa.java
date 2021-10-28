@@ -6,9 +6,9 @@ public class menuPausa extends javax.swing.JFrame {
      * Creates new form menuPausa
      */
     
-    janelaJogo5 e;
+    janelaJogoFinal e;
     
-    public menuPausa(janelaJogo5 e) {
+    public menuPausa(janelaJogoFinal e) {
         initComponents();
     
         this.e = e;
