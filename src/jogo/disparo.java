@@ -1,4 +1,4 @@
-package space.invaders.pkg;
+package jogo;
 
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -27,15 +27,16 @@ public class disparo extends Rectangle{
     
     private void loadImagem(int dir)
     {
+        ClassLoader cl = this.getClass().getClassLoader();                
         ImageIcon sprite;
         
         if(dir == -1)
         {
-            sprite = new ImageIcon("imagens//disparoCima.png");
+            sprite = new ImageIcon(cl.getResource("imagens/disparoCima.png"));
         }
         else
         {
-            sprite = new ImageIcon("imagens//disparoBaixo.png");
+            sprite = new ImageIcon(cl.getResource("imagens/disparoBaixo.png"));
         } 
         imagem = sprite.getImage();
     }

@@ -1,4 +1,4 @@
-package space.invaders.pkg;
+package jogo;
 
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -27,7 +27,8 @@ public class barreira extends Rectangle{
     
     private void loadImagem()
     {
-        ImageIcon sprite = new ImageIcon("imagens//Nuvem.png"); 
+        ClassLoader cl = this.getClass().getClassLoader(); 
+        ImageIcon sprite = new ImageIcon(cl.getResource("imagens/Nuvem.png")); 
         imagem = sprite.getImage();
     }
 

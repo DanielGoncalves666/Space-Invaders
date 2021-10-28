@@ -1,4 +1,4 @@
-package space.invaders.pkg;
+package jogo;
 
 import java.awt.Rectangle;
 import java.util.HashMap;
@@ -65,27 +65,27 @@ public class frotaInimiga extends Rectangle{
         {
             case 0:
                 score = 30;
-                caminho = "imagens//Inimigo_30.gif";
+                caminho = "imagens/Inimigo_30.gif";
                 break;
             case 1:
                 score = 20;
-                caminho = "imagens//Inimigo_20.gif";
+                caminho = "imagens/Inimigo_20.gif";
                 break;                
             case 2:
                 score = 20;
-                caminho = "imagens//Inimigo_20.gif";
+                caminho = "imagens/Inimigo_20.gif";
                 break;                
             case 3:
                 score = 10;
-                caminho = "imagens//Inimigo_10.gif";
+                caminho = "imagens/Inimigo_10.gif";
                 break;
             case 4:
                 score = 10;
-                caminho = "imagens//Inimigo_10.gif";
+                caminho = "imagens/Inimigo_10.gif";
                 break;
             default:
                 score = 0;
-                caminho = "imagens//Inimigo_10.gif";
+                caminho = "imagens/Inimigo_10.gif";
         }
         
         naveInimiga n = new naveInimiga(x,y,score,linha,coluna,caminho);
@@ -235,12 +235,12 @@ public class frotaInimiga extends Rectangle{
         
         for(Object key : vet)
         {
-            naveInimiga ni = fleet.get(key);
+            naveInimiga ni = fleet.get( (Integer) key);
             
             if(d.intersects(ni))
             {
                 score = ni.getScore();
-                ni = fleet.remove( (Integer) key);
+                fleet.remove( (Integer) key);
                 
                 return score;
             }

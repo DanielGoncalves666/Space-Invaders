@@ -1,4 +1,4 @@
-package space.invaders.pkg;
+package jogo;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -17,24 +18,31 @@ import javax.swing.Timer;
 public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
 
     private final int miliseconds = 4;// padrao é 4
-    private final int IntervaloEntreDisparosInimigos = 750 / miliseconds;   
+    private final int IntervaloEntreDisparosInimigos = 1000 / miliseconds;   
+    private final int IntervaloMovimento = 10;
+    private final int IntervaloMovimentoEspecial = 5;
+    private final int eventoEspecial = 9; // a cada 9 naves destruidas uma nave especial aparece
     
     private Timer timer;
 
     public boolean isDificuldadeNormal;
     public boolean isPausado;
     public boolean jogadorFoiDestruido;
+    public boolean recomecar;
     private boolean atirar;
     private int movimento;
     private int IntervaloMovimentoInimigo;
+    private int IntervaloMovimentoInimigoEspecial;
     private int contagemEntreDisparos;
     private int qtdVidas;
     private int Score;
+    private int contagemEventoEspecial;
 
     private naveJogador jogador;
     private ArrayList<disparo> vetorDisparos = new ArrayList<>();
     private ArrayList<barreira> linhaDeDefesa = new ArrayList<>();
     private frotaInimiga Frota;
+    private naveInimigaEspecial especial;
     
     public janelaJogo5(menuInicial mu) {
         initComponents();
@@ -42,14 +50,18 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setFocusable(true);
+        this.setTitle("Space Invaders");
         
         this.PausadoLabel.setVisible(false);
         this.isDificuldadeNormal = mu.isDificuldadeNormal;
         this.isPausado = false;
         
         criaJogador();
-        criaBarreiras();
         criarInimigos();
+
+        if(isDificuldadeNormal) // barreiras apenas na dificuldade normal
+            criaBarreiras();
+
         
         PainelJogo.setVisible(true);
         
@@ -142,9 +154,11 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
     }// </editor-fold>                                                       
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) 
-    {                                
+    {
+        System.out.println("Teclou" + evt.getKeyChar());
         int tecla = evt.getKeyCode();
-
+        this.recomecar = true;
+        
         switch (tecla) {
             case KeyEvent.VK_A:
                 movimento = -1;
@@ -153,7 +167,7 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
                 movimento = 1;
                 break;
             case KeyEvent.VK_SPACE:
-                if(!isJogadorDisparado())
+                if(!isJogadorDisparado())    
                     this.atirar = true;
                 break;
             case KeyEvent.VK_P:
@@ -183,23 +197,24 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
         }
     } 
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         // as operações de movimentação e tiro só são realizadas quando o jogo não está pausado
         if(this.jogadorFoiDestruido)
         {
             repaint();
-            if(this.atirar)
+            if(this.recomecar)
             {
                 this.jogadorFoiDestruido = false;
                 jogador = new naveJogador(255, 459, 40, 30);
             }
-        }
+        } 
         else if(!isPausado)
         {
 
             jogador.movimento(movimento,true); // movimentação do jogador. Ocorre de acordo com o valor determinado em "movimento".
             if(this.atirar) // disparo do jogador
-            {                                             // assim o disparo sai do meio da bave
+            {                                             // assim o disparo sai do meio da nave
                 vetorDisparos.add(new disparo(jogador.x + 20, jogador.y, -1));
                 this.atirar = false;
                 // -1 pois o disparo irá pra cima
@@ -218,7 +233,7 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
             if(IntervaloMovimentoInimigo == 0)
             {
                 Frota.moverFrota(2, 5);
-                IntervaloMovimentoInimigo = 10;
+                IntervaloMovimentoInimigo = IntervaloMovimento;
             }
             else
             {
@@ -227,41 +242,72 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
             // movimentação do inimigo
             
             
-            // barreiras somem
-            if(Frota.LinhaNaveMaisBaixa() + 20 >= 339)
-            {
+            if(isDificuldadeNormal) // barreiras disponíveis apenas no modo normal
+            {    // barreiras somem
+                if(Frota.LinhaNaveMaisBaixa() + 20 >= 339)
+                {
 
-                for (Iterator iterador = linhaDeDefesa.iterator(); iterador.hasNext();) 
-                {    
-                    barreira b = (barreira) iterador.next();
-                    iterador.remove();
+                    for (Iterator iterador = linhaDeDefesa.iterator(); iterador.hasNext();) 
+                    {    
+                        barreira b = (barreira) iterador.next();
+                        iterador.remove();
+                    }
+                }
+                // barreiras somem
+            }  
+                
+            // so cria a nave se o requerimento de evento foi completo e n tiver nenhuma ja criada
+            if(contagemEventoEspecial == 0 && especial == null)
+            {
+                criarNaveEspecial();               
+            }
+            
+            if(especial != null)//movimento e eliminação da nave especial
+            {
+                if(this.IntervaloMovimentoInimigoEspecial == 0)
+                {
+                    boolean t = especial.moverDireita(1);
+                    if(!t)
+                    {
+                        // nave chegou no canto direito
+                        this.eliminarNaveEspecial();
+                    }
+                    this.IntervaloMovimentoInimigoEspecial = IntervaloMovimentoEspecial;
+                }
+                else
+                {
+                    this.IntervaloMovimentoInimigoEspecial--;
                 }
             }
-            // barreiras somem
-            
-            
             
             movimentarDisparos();
-            colisaoBarreiras();
+            if(isDificuldadeNormal) // barreiras apenas na dificuldade normal
+                colisaoBarreiras();
             colisaoFrotaInimiga();
+            colisaoNaveEspecial();
             boolean colidiu = colisaoJogador();
 
             if(colidiu)
             {
                 this.jogadorFoiDestruido = true;
-                jogador.setImagem("imagens//Explosao.gif");   
+                this.recomecar = false;
+                jogador.setImagem("imagens/Explosao.gif");   
                 this.QtdVidasLabel.setText(qtdVidas + "");
             }
             
             if(qtdVidas == 0 || Frota.LinhaNaveMaisBaixa() >= 460)
             {
                 // nesses casos o jogo acaba
-                
+                this.isPausado = true;
+                JOptionPane.showMessageDialog(null, "Suas vidas acabaram. Fim de jogo!", "Que pena!", JOptionPane.ERROR_MESSAGE);
+                this.dispose();
             }
 
             if(Frota.getTotalVivas() == 0)
             {
-                // vitoria do jogador
+                this.isPausado = true;
+                JOptionPane.showMessageDialog(null, "Você venceu!", "Score: " + Score, JOptionPane.ERROR_MESSAGE);
+                this.dispose();
             }
         
             ValorLabel.setText(this.Score + "");
@@ -332,7 +378,7 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
                     imagens.drawImage(d.getImagem(), d.x, d.y, this);
                 }
                 
-                for(barreira b: linhaDeDefesa)
+                for(barreira b: linhaDeDefesa) //desenha as linhas de defesa
                 {
                     Rectangle[][] mat = b.getMatriz();
                     
@@ -351,16 +397,17 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
                 
                 HashMap<Integer,naveInimiga> inimigos = Frota.getFleet();
                 Object[] vet = inimigos.keySet().toArray();
-                for(Object key : vet)
+                for(Object key : vet) //desenha a frota inimiga
                 {
                     naveInimiga ni = inimigos.get((Integer) key);
                     
                     imagens.drawImage(ni.getImagem(), ni.x, ni.y, this);
                 }
                 
-                
-                // desenhar nave especial
-                
+                if(especial != null)// desenha a nave especial
+                {
+                    imagens.drawImage(especial.getImagem(), especial.x, especial.y, this);
+                }
                 
                 g.dispose();
             }
@@ -442,10 +489,12 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
                 if(score != 0)
                 {
                     this.Score += score;
+                    this.contagemEventoEspecial--;
                     iterador.remove();
                 }
             }
         }
+        
             
     }
     
@@ -468,6 +517,26 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
         }
         
         return false;
+    }
+    
+    public void colisaoNaveEspecial()
+    {
+        if(especial != null) // verifica colisão apenas se uma nave especial existir
+        {
+            for(Iterator iterador = vetorDisparos.iterator(); iterador.hasNext();)
+            {
+                disparo d = (disparo) iterador.next();
+                
+                if(d.intersects(especial))
+                {
+                    // nave especial atingida
+                    this.Score += especial.getScore();
+                    eliminarNaveEspecial();
+                    iterador.remove();
+                    break;
+                }
+            }
+        }
     }
     
     public boolean isJogadorDisparado()
@@ -548,6 +617,19 @@ public class janelaJogo5 extends javax.swing.JFrame implements ActionListener{
         Frota = new frotaInimiga();
         IntervaloMovimentoInimigo = 0;
         contagemEntreDisparos = 0;
+        contagemEventoEspecial = eventoEspecial;
+    }
+    
+    public void criarNaveEspecial()
+    {
+        especial = new naveInimigaEspecial();
+        this.IntervaloMovimentoInimigoEspecial = this.IntervaloMovimentoEspecial;
+    }
+    
+    public void eliminarNaveEspecial()
+    {
+        especial = null;
+        contagemEventoEspecial = eventoEspecial;
     }
 }
 

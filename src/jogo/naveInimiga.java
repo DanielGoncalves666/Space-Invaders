@@ -1,4 +1,4 @@
-package space.invaders.pkg;
+package jogo;
 
 import static java.lang.Math.ceil;
 

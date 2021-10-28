@@ -1,4 +1,4 @@
-package space.invaders.pkg;
+package jogo;
 
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -15,7 +15,8 @@ public abstract class nave extends Rectangle{
     
     public void loadImagem(String caminho)
     {
-        ImageIcon sprite = new ImageIcon(caminho);
+        ClassLoader cl = this.getClass().getClassLoader();        
+        ImageIcon sprite = new ImageIcon(cl.getResource(caminho));
         imagem = sprite.getImage();
     }
     
